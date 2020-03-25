@@ -29,7 +29,7 @@ then
 	exit 1
 fi 
 
-echo "****************"
+echo "*******************"
 echo "prepare libfcgi"
 cp /work/assets/libfcgi-2.4.0.orig.tar.gz .
 if [ $? -ne 0 ]
