@@ -9,12 +9,24 @@ then
     exit 1
 fi
 
+#echo "RUN SCRIPTS"
+#docker run --rm --user root -v $PWD:/work -v /tmp/output:/output  ${DOCKERIMAGE} /work/scripts/zoo.sh
+#if [ $? -ne 0 ]
+#then
+#	echo "Build scripts failed"
+#	exit 2
+#fi
 
-mkdir  -p /tmp/output
+docker build --rm -t eoepca-zoo:1.0 .
+if [ $? -ne 0 ]
+then
+	echo "Docker image  failed"
+	exit 3
+fi
 
-echo "RUN SCRIPTS"
-docker run --rm --user root -v $PWD:/work -v /tmp/output:/output  ${DOCKERIMAGE} /work/scripts/zoo.sh
-#docker run --rm --user root -ti -v $PWD:/work -v /tmp/output:/output  ${DOCKERIMAGE} bash 
+
+
+
 
 
 

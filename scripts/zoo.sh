@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 
+FOLDER="/work/output"
+echo ${FOLDER}
 
-FOLDER='/output'
+rm -fvR ${FOLDER}
+mkdir -p ${FOLDER}
 
 cd ${FOLDER}
 
