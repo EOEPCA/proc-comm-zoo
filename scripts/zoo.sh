@@ -70,21 +70,22 @@ then
 fi 
 
 make install
-make libcgic.a
 if [ $? -ne 0 ]
 then
-	echo "make libcgic.a instll failed"
+	echo "make install libcgic.a  failed"
 	exit 1
 fi 
+
+
 cd ${FOLDER}/zoo-project-1.7.0/zoo-project/zoo-kernel/
 
-autoconf 
-make libcgic.a
+autoconf  
 if [ $? -ne 0 ]
 then
 	echo "autoconf failed"
 	exit 1
 fi 
+
 ./configure  --with-fastcgi=/opt/app-root/src/libfcgi-2.4.0.orig/OUT/lib --with-xml2config=/usr/bin/xml2-config  --with-cgi-dir=/var/www/cgi-bin --with-etc-dir=yes --sysconfdir=/etc/zoo-project
 if [ $? -ne 0 ]
 then
@@ -102,7 +103,7 @@ fi
 make install 
 if [ $? -ne 0 ]
 then
-	echo "make install failed"
+	echo "make install zoo failed"
 	exit 1
 fi
 
