@@ -2,5 +2,48 @@
 
 set -euov pipefail
 
+source travis/libs/variables.sh
+
+if [ "${TRAVIS}" == "true" ]
+then
+	if [ -z "${DOCKER_PASSWORD}" ]
+	then
+		echo "DOCKER_PASSWORD is empty"
+		exit 1
+	fi
+
+	if [ -z "${DOCKER_USERNAME}" ]
+	then
+		echo "DOCKER_USERNAME is empty"
+		exit 1
+	fi
+fi
+
 #run script
 scripts/build.sh
+
+if [ "${TRAVIS}" == "true" ]
+then #send push
+	
+	docker tag ${LOCAL_SERVICE_NAME}:${buildTag} ${EOEPCA_DOCKERIMAGE}:${buildTag}
+	if [ "$?" -ne 0 ]
+	then
+		echo "docker tag ${LOCAL_DOCKERIMAGE}:${buildTag} --> ${EOEPCA_DOCKERIMAGE}:${buildTag} failed"
+		exit 1
+	fi
+
+	echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
+	if [ "$?" -ne 0 ]
+	then
+		echo "Docker Hub login failed"
+		exit 1
+	fi
+
+	docker push "${EOEPCA_DOCKERIMAGE}:${buildTag}"
+	if [ "$?" -ne 0 ]
+	then
+		echo "Docker push ${EOEPCA_DOCKERIMAGE}:${buildTag} failed"
+		exit 1
+	fi
+fi
+
