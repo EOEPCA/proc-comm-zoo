@@ -2,6 +2,8 @@
 
 RELEASETYPE=''
 
+export NULL='none'
+
 export SERVICE_NAME="proc-comm-zoo"
 export LOCAL_SERVICE_NAME="local_${SERVICE_NAME}"
 
@@ -33,6 +35,11 @@ then
 fi
 
 #new definitions
+
+
+export DOCKER_USERNAME="${DOCKER_USERNAME:${NULL}}"
+export DOCKER_PASSWORD="${DOCKER_PASSWORD:${NULL}}"
+
 export TRAVIS_BUILD_NUMBER="${TRAVIS_BUILD_NUMBER:-0}"
 export buildTag=${TRAVIS_BRANCH}_${TRAVIS_BUILD_NUMBER}
 
