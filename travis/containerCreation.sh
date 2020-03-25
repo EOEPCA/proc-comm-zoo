@@ -4,21 +4,6 @@ set -euov pipefail
 
 source travis/libs/variables.sh
 
-if [ "${TRAVIS}" == "true" ]
-then
-	if [ "${DOCKER_PASSWORD}" == "${NULL}" ]
-	then
-		echo "DOCKER_PASSWORD is empty"
-		exit 1
-	fi
-
-	if [ "${DOCKER_USERNAME}" == "${NULL}" ]
-	then
-		echo "DOCKER_USERNAME is empty"
-		exit 1
-	fi
-fi
-
 #run script
 scripts/build.sh
 
