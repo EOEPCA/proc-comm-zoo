@@ -6,13 +6,13 @@ source travis/libs/variables.sh
 
 if [ "${TRAVIS}" == "true" ]
 then
-	if [ -z "${DOCKER_PASSWORD}" ]
+	if [ -z ${DOCKER_PASSWORD} ]
 	then
 		echo "DOCKER_PASSWORD is empty"
 		exit 1
 	fi
 
-	if [ -z "${DOCKER_USERNAME}" ]
+	if [ -z ${DOCKER_USERNAME} ]
 	then
 		echo "DOCKER_USERNAME is empty"
 		exit 1
