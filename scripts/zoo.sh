@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 
-cd /output
+
+FOLDER='/output'
+
+cd ${FOLDER}
 
 yum install -y epel-release
 
@@ -18,10 +21,10 @@ tar -zxvf libfcgi-2.4.0.orig.tar.gz
 
 unzip zoo-project-1.7.0.zip
 
-cd  /output/zoo-project-1.7.0/thirds/cgic206
+cd  ${FOLDER}/zoo-project-1.7.0/thirds/cgic206
 make libcgic.a
 make install
-cd /output/zoo-project-1.7.0/zoo-project/zoo-kernel/
+cd ${FOLDER}/zoo-project-1.7.0/zoo-project/zoo-kernel/
 
 autoconf 
 
@@ -29,12 +32,23 @@ autoconf
 
 
 make 
-
+make install 
 ln -s  libzoo_service.so   libzoo_service.so.1.5 
+
+echo "************************************************************"
+echo "Build status service and demo"
+HERE=$PWD
+cd ${FOLDER}/zoo-project-1.7.0/zoo-project/zoo-services/utils/status
+make 
+mkdir -p ${FOLDER}/demo
+rsync -av cgi-env/* ${FOLDER}/demo 
+
+cd ${HERE}
+echo "************************************************************"
+
 
 mkdir -p /etc/zoo-project/
 cp main.cfg /etc/zoo-project/
-
 
 export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:.
 

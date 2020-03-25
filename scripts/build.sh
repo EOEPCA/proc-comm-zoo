@@ -14,6 +14,7 @@ mkdir  -p /tmp/output
 
 echo "RUN SCRIPTS"
 docker run --rm --user root -v $PWD:/work -v /tmp/output:/output  ${DOCKERIMAGE} /work/scripts/zoo.sh
+#docker run --rm --user root -ti -v $PWD:/work -v /tmp/output:/output  ${DOCKERIMAGE} bash 
 
 
 
