@@ -22,10 +22,6 @@ fi
 chmod +x scripts/zoo.sh
 
 FOLDER="/work/build"
-if [ ! -z "${RUNFOLDER}" ]#RUNFOLDER is set
-then
-	FOLDER=${RUNFOLDER}
-fi
 
 echo "RUN SCRIPTS"
 docker run --rm --user root --env FOLDER=${FOLDER} -v $PWD:/work ${DOCKERIMAGE} /work/scripts/zoo.sh
