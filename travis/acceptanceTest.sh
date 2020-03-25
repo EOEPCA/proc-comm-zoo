@@ -7,10 +7,12 @@ source travis/libs/variables.sh
 if [ "${TRAVIS}" == "true" ]
 then
 
-	docker push "${EOEPCA_DOCKERIMAGE}:${buildTag}"
+	echo ""
+
+	docker pull "${EOEPCA_DOCKERIMAGE}:${buildTag}"
 	if [ "$?" -ne 0 ]
 	then
-		echo "Docker push ${EOEPCA_DOCKERIMAGE}:${buildTag} failed"
+		echo "Docker pull ${EOEPCA_DOCKERIMAGE}:${buildTag} failed"
 		exit 1
 	fi
 
