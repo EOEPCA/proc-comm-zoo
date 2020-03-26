@@ -40,7 +40,6 @@
   - [Installation](#installation)
   - [Testing](#testing)
   - [eoepca distribution](#eoepca-distribution)
-- [Documentation](#documentation)
 - [Usage](#usage)
 - [Contributing](#contributing)
 - [License](#license)
