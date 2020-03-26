@@ -105,7 +105,7 @@ cd proc-comm-zoo
 ./scripts/build.sh
 ```
 
-If you are performing a local build the build script creates a Docker Image:
+If you are performing a local build the script creates a Docker Image:
 
 ```text
 proc-comm-zoo:1.0
