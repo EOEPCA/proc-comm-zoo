@@ -129,11 +129,9 @@ curl -L  "http://localhost:7777/zoo/?service=WPS&version=1.0.0&request=GetCapabi
 EOEPCA provides a ready-made Docker Image in its [DockerHub][eoepca-zoo]
 
 
-## Documentation
 
-The component documentation can be found at https://eoepca.github.io/template-svce-cpp/.
 
-<!-- USAGE EXAMPLES -->
+
 
 ## Usage
 
