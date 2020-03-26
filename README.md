@@ -34,13 +34,14 @@
 
 - [About the Project](#about-the-project)
   - [Built With](#built-with)
+  - [Resources](#resources)
 - [Getting Started](#getting-started)
   - [Prerequisites](#prerequisites)
   - [Installation](#installation)
   - [Testing](#testing)
+  - [eoepca distribution](#eoepca-distribution)
 - [Documentation](#documentation)
 - [Usage](#usage)
-- [Roadmap](#roadmap)
 - [Contributing](#contributing)
 - [License](#license)
 - [Contact](#contact)
@@ -50,22 +51,26 @@
 
 ## About The Project
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec maximus, libero id condimentum laoreet, magna sem tempor odio, sit amet vehicula est orci nec quam. Aenean ante ante, blandit ac tempus sed, sollicitudin sed purus. Interdum et malesuada fames ac ante ipsum primis in faucibus. Mauris turpis mauris, consectetur nec pharetra nec, finibus ut libero. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Curabitur ac leo sit amet dolor dignissim placerat at a quam. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Donec lacinia turpis mi, eu commodo mi auctor a. Curabitur vel neque mauris.
+The scripts included with the application prepare and build a Docker image of [WPS zoo-project][zoo-project-link].
 
-Praesent in vulputate mi, eget condimentum lorem. Donec euismod eros in turpis rutrum, non interdum augue porttitor. Praesent ac erat ac odio maximus blandit. Nunc luctus leo mattis dictum condimentum. Vivamus condimentum bibendum ligula, eget scelerisque felis posuere vitae. Nam aliquam suscipit leo sodales tristique. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam sed lectus commodo, vestibulum nisl convallis, maximus arcu. Maecenas in tellus nec ipsum porta gravida.
+The zoo-project version used is [1.7.0](http://zoo-project.org/dl/zoo-project-1.7.0.zip)
 
-Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Suspendisse at auctor enim, ac rhoncus ipsum. Nullam vel ullamcorper erat, non bibendum augue. Suspendisse potenti. Aliquam blandit suscipit viverra. Donec interdum ligula ut ante rutrum ultricies eleifend a elit. Mauris congue bibendum nisi, eget egestas orci scelerisque quis. Duis maximus mattis purus, eu rhoncus velit volutpat et.
+The WPS server has been configured to use the c/c++ languages.
+
 
 ### Built With
 
-- [CMAKE](https://cmake.org/)
-- [googletest](https://github.com/google/googletest)
+- [Docker](https://www.docker.com/)
+- [autoconf](https://www.gnu.org/software/autoconf/)
+- [configure](https://en.wikipedia.org/wiki/Configure_script)
+- [make](http://man7.org/linux/man-pages/man1/make.1.html)
+
+### Resources
+
+- assets/main.cfg: configuration file copied into the Docker image
+- assets/zoo/http: httpd configuration files
 
 <!-- GETTING STARTED -->
-
-
- 
-
 
 ## Getting Started
 
@@ -73,41 +78,57 @@ To get a local copy up and running follow these simple steps.
 
 ### Prerequisites
 
-This is an example of how to list things you need to use the software and how to install them.
-
-- [Vagrant](https://www.vagrantup.com/docs/installation/)
-- [EOEPCA Development Environment for C++](https://github.com/EOEPCA/dev-env-cpp)
+- [Internet access](https://en.wikipedia.org/wiki/Internet_access)
+- [Docker](https://www.docker.com/)
+- [Linux bash](https://en.wikipedia.org/wiki/Bash_(Unix_shell))
+- [curl](https://en.wikipedia.org/wiki/CURL)
 
 ### Installation
 
-1. Get into EOEPCA's development environment for C++
+1. Get into Linux terminal
+
+2. Clone the repo
 
 ```sh
-vagrant ssh
+git clone https://github.com/EOEPCA/proc-comm-zoo.git
 ```
 
-3. Clone the repo
+3. Change local directory
 
 ```sh
-git clone https://github.com/EOEPCA/template-svce-cpp.git
-```
-
-4. Change local directory
-
-```sh
-cd template-service-cpp/build
+cd proc-comm-zoo
 ```
 
 5. Build application
 
 ```sh
-cmake -DCMAKE_BUILD_TYPE=Debuf -G "CodeBlocks - Unix Makefiles" ..
-make
+./scripts/build.sh
+```
+
+If you are performing a local build the build script creates a Docker Image:
+
+```text
+proc-comm-zoo:1.0
 ```
 
 ### Testing
 
-- `./test/eoepca-test` runs only the unit tests
+1. Run local image
+
+```sh
+docker run -d --rm --name zoo  -p 7777:80 proc-comm-zoo:1.0
+```
+
+2. Send a request
+
+```ssh
+curl -L  "http://localhost:7777/zoo/?service=WPS&version=1.0.0&request=GetCapabilities"
+```
+
+### eoepca distribution
+
+EOEPCA provides a ready-made Docker Image in its [DockerHub][eoepca-zoo]
+
 
 ## Documentation
 
@@ -117,23 +138,23 @@ The component documentation can be found at https://eoepca.github.io/template-sv
 
 ## Usage
 
-Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
-
-_For more examples, please refer to the [Documentation](https://example.com)_
+Download and run the Docker Image
 
 ### Running the template service
 
-To run the application
+1. Run local build or [eoepca distribution][eoepca-zoo]
+
+Local.
 
 ```sh
-./src/eoepca
+docker run -d --rm --name zoo  -p 7777:80 proc-comm-zoo:1.0
 ```
 
-## Roadmap
+eoepca.
 
-See the [open issues](https://github.com/EOEPCA/template-svce-cpp/issues) for a list of proposed features (and known issues).
-
-<!-- CONTRIBUTING -->
+```sh
+docker run -d --rm --name zoo  -p 7777:80 eoepca/proc-comm-zoo:latest
+```
 
 ## Contributing
 
@@ -149,25 +170,15 @@ Contributions are what make the open source community such an amazing place to b
 
 ## License
 
-
-
 Distributed under the Apache-2.0 License. See `LICENSE` for more information.
 
-<!-- CONTACT -->
 
 ## Contact
-
-Your Name - [@twitter_handle](https://twitter.com/twitter_handle) - email
-
-Project Link: [https://github.com/EOEPCA/template-svce-cpp](https://github.com/EOEPCA/template-svce)
 
 <!-- ACKNOWLEDGEMENTS -->
 
 ## Acknowledgements
 
-- []()
-- []()
-- README.md is based on [this template](https://github.com/othneildrew/Best-README-Template) by [Othneil Drew](https://github.com/othneildrew).
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
@@ -184,3 +195,5 @@ Project Link: [https://github.com/EOEPCA/template-svce-cpp](https://github.com/E
 [license-url]: https://github.com/EOEPCA/template-svce/blob/master/LICENSE
 [build-shield]: https://www.travis-ci.com/EOEPCA/template-svce.svg?branch=master
 [product-screenshot]: images/screenshot.png
+[zoo-project-link]: http://www.zoo-project.org/
+[eoepca-zoo]: https://hub.docker.com/r/eoepca/proc-comm-zoo/tags
