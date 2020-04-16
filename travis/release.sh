@@ -2,7 +2,7 @@
 
 set -euov pipefail
 
-source travis/variables.sh
+source travis/libs/variables.sh
  
 pullTag=${EOEPCA_DOCKERIMAGE}:${buildTag}
 releaseTag=${EOEPCA_REPOSITORY}/${SERVICE_NAME}:release_${buildTag}
