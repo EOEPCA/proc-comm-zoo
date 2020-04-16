@@ -20,12 +20,17 @@ TRAVIS_BRANCH="${TRAVIS_BRANCH:-develop}"
 TRAVIS_BRANCH=$(echo ${TRAVIS_BRANCH}| sed -e 's@/@_@g')
 TRAVIS_BRANCH=$(echo ${TRAVIS_BRANCH}| sed -e 's@-@_@g')
 
+
+TRAVIS_NAME="travis_"
+
 export TRAVIS_BRANCH
+export TRAVIS_NAME
 
 #simple anchor
 if [ "${TRAVIS_BRANCH}" == 'master' ]
 then
 	echo 'Branch selected: master '
+	TRAVIS_NAME=''
 fi
 
 #simple anchor
