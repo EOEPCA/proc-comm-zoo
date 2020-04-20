@@ -30,6 +30,6 @@ RUN chown -R apache:apache /var/www /opt/t2build \
 	&& chmod +x /var/www/zoo-bin/zoo_loader.cgi \
 	&& ln -s /usr/local/lib/libzoo_service.so /usr/local/lib/libzoo_service.so.1.5
 
-ENTRYPOINT ["/opt/t2scripts/entrypoint.sh"]
+CMD ["/opt/t2scripts/entrypoint.sh"]
 
 
