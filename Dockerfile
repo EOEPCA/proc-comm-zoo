@@ -1,11 +1,9 @@
 FROM centos/devtoolset-7-toolchain-centos7
 
 USER root
-#
-
 RUN ln -s /opt/rh/devtoolset-7/enable /etc/profile.d/rhgccenable.sh && chmod +x /etc/profile.d/rhgccenable.sh
 
-#RUN yum install -y epel-release
+RUN yum install -y epel-release
 RUN yum update -y
 RUN yum install -y   zlib-devel libxml2 libxml2-devel bison openssl  python-devel subversion libxslt-devel libcurl-devel  gdal-devel proj-devel libuuid-devel openssl-devel fcgi-devel wget unzip autoconf flex
 
