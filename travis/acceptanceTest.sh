@@ -21,7 +21,7 @@ then
 	sleep 15 # wait until the container is running
 
 	curl -L  "http://localhost:7777/zoo/?service=WPS&version=1.0.0&request=GetCapabilities"
-	if [ "$?" -ne 0]
+	if [ "$?" -ne 0 ]
 	then
 		echo "curl test failed"
 		exit 1
