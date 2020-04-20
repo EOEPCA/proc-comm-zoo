@@ -86,7 +86,7 @@ then
 	exit 1
 fi 
 
-./configure  --with-fastcgi=/opt/app-root/src/libfcgi-2.4.0.orig/OUT/lib --with-xml2config=/usr/bin/xml2-config  --with-cgi-dir=/var/www/cgi-bin --with-etc-dir=yes --sysconfdir=/etc/zoo-project
+./configure  --with-fastcgi=/opt/app-root/src/libfcgi-2.4.0.orig/OUT/lib --with-xml2config=/usr/bin/xml2-config  --with-cgi-dir=/var/www/zoo-bin --with-etc-dir=yes --sysconfdir=/etc/zoo-project
 if [ $? -ne 0 ]
 then
 	echo "configure failed"
