@@ -3,17 +3,22 @@
 set -euov pipefail
 
 source travis/libs/variables.sh
- 
-pullTag=${EOEPCA_DOCKERIMAGE}:${buildTag}
-releaseTag=${EOEPCA_REPOSITORY}/${SERVICE_NAME}:release_${buildTag}
-latestTag=${EOEPCA_REPOSITORY}/${SERVICE_NAME}:latest
 
-echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+if [ "${TRAVIS_BRANCH}" == 'master' ]
+then
+	pullTag=${EOEPCA_DOCKERIMAGE}:${buildTag}
+	releaseTag=${EOEPCA_REPOSITORY}/${SERVICE_NAME}:release_${buildTag}
+	latestTag=${EOEPCA_REPOSITORY}/${SERVICE_NAME}:latest
 
-docker pull ${pullTag}
+	echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
 
-docker tag ${pullTag} ${releaseTag}
-docker push ${releaseTag}
+	docker pull ${pullTag}
 
-docker tag ${pullTag} ${latestTag}
-docker push ${latestTag}
+	docker tag ${pullTag} ${releaseTag}
+	docker push ${releaseTag}
+
+	docker tag ${pullTag} ${latestTag}
+	docker push ${latestTag}
+fi
+
+
