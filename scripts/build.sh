@@ -24,6 +24,7 @@ chmod +x scripts/zoo.sh
 FOLDER="/work/build"
 
 echo "RUN SCRIPTS"
+#docker run --rm --user root --env FOLDER=${FOLDER} --user root -ti  -v $PWD:/work ${DOCKERIMAGE} bash
 docker run --rm --user root --env FOLDER=${FOLDER} -v $PWD:/work ${DOCKERIMAGE} /work/scripts/zoo.sh
 if [ $? -ne 0 ]
 then
