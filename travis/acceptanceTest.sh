@@ -41,7 +41,7 @@ then
 		exit 1
 	fi
 
-	curl -s -L -X GET "http://localhost:7777/wps3/processes/" -H  "accept: application/json"
+	curl -s -L -X GET "http://localhost:7777/wps3/processes/GetStatus" -H  "accept: application/json"
 	if [ "$?" -ne 0 ]
 	then
 		echo "curl test failed"
