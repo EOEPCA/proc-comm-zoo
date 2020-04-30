@@ -27,5 +27,26 @@ then
 		exit 1
 	fi
 
+	curl -s -L -X GET "http://localhost:7777/wps3/" -H  "accept: application/json"
+	if [ "$?" -ne 0 ]
+	then
+		echo "curl test failed"
+		exit 1
+	fi
+
+	curl -s -L -X GET "http://localhost:7777/wps3/processes" -H  "accept: application/json"
+	if [ "$?" -ne 0 ]
+	then
+		echo "curl test failed"
+		exit 1
+	fi
+
+	curl -s -L -X GET "http://localhost:7777/wps3/processes/" -H  "accept: application/json"
+	if [ "$?" -ne 0 ]
+	then
+		echo "curl test failed"
+		exit 1
+	fi
+
 fi
 
