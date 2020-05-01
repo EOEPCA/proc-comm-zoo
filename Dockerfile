@@ -32,7 +32,7 @@ RUN yum install -y vim httpd \
 COPY assets/zoo/httpd/htaccess_wps3 /var/www/html/wps3/.htaccess
 COPY assets/zoo/httpd/htaccess /var/www/html/zoo/.htaccess
 COPY assets/zoo/httpd/zoo.conf	/etc/httpd/conf.d/zoo.conf
-COPY build/demo/updateStatus.xsl /var/www/data/updateStatus.xsl
+#COPY build/demo/updateStatus.xsl /var/www/data/updateStatus.xsl
 COPY assets/main.cfg /etc/zoo-project/main.cfg
 COPY assets/oas.cfg /etc/zoo-project/oas.cfg
 
@@ -40,7 +40,7 @@ COPY assets/main.cfg /opt/t2service/main.cfg
 COPY assets/oas.cfg /opt/t2service/oas.cfg
 
 RUN cd /opt/ZOO-Project/zoo-project/zoo-services/utils/status && make && cd /opt/ZOO-Project/zoo-project/zoo-services/utils/status/cgi-env && \
-    cp longProcess.zcfg wps_status.zo GetStatus.zcfg /opt/t2service/
+    cp longProcess.zcfg wps_status.zo GetStatus.zcfg /opt/t2service/ && cp /opt/ZOO-Project/zoo-project/zoo-services/utils/status/cgi-env/updateStatus.xsl   /var/www/data/updateStatus.xsl
 
 COPY scripts/entrypoint.sh /opt/t2scripts/entrypoint.sh
 
