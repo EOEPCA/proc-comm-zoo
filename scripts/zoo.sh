@@ -6,7 +6,6 @@ then
 	exit 1
 fi
 
-
 echo ${FOLDER}
 
 rm -fvR ${FOLDER}
@@ -22,7 +21,9 @@ then
 fi 
 
 yum update -y
-yum install -y zlib-devel libxml2 libxml2-devel bison openssl  python-devel subversion libxslt-devel libcurl-devel  gdal-devel json-c json-c-devel  proj-devel libuuid-devel openssl-devel fcgi-devel wget unzip autoconf flex
+yum install -y zlib-devel libxml2 libxml2-devel bison openssl  python-devel subversion libxslt-devel libcurl-devel gdal gdal-devel proj-devel libuuid-devel openssl-devel fcgi-devel wget unzip autoconf flex
+yum install -y json-c json-c-devel git
+
 if [ $? -ne 0 ]
 then
 	echo "yum install dependencies failed"
@@ -48,8 +49,8 @@ echo "****************"
 
 echo "***************"
 echo "install wps-zoo"
-cp /work/assets/zoo-Project.tar.gz .
-tar -zxvf zoo-Project.tar.gz
+
+git clone https://github.com/OSGeo/zoo-project.git ZOO-Project
 if [ $? -ne 0 ]
 then
 	echo "wget zoo failed"
