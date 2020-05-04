@@ -50,9 +50,10 @@ then
 
 
   echo "run longProcess  test"
-  job=$(curl -s  -v -L -X POST "http://localhost:7777/wps3/processes/longProcess/jobs" -H  "accept: application/json" -H  "Prefer: respond-async" -H  "Content-Type: application/json" -d "{\"inputs\":[{\"id\":\"string\"}],\"outputs\":[{\"format\":{\"mimeType\":\"string\",\"schema\":\"string\",\"encoding\":\"string\"},\"id\":\"Result\",\"transmissionMode\":\"value\"}]}"  2>&1 |  grep Location  | cut -d':' -f2)
 
-  echo 'run!'
+  curl -s -D /tmp/header  -v -L -X POST "http://localhost:7777/wps3/processes/longProcess/jobs" -H  "accept: application/json" -H  "Prefer: respond-async" -H  "Content-Type: application/json" -d "{\"inputs\":[{\"id\":\"string\"}],\"outputs\":[{\"format\":{\"mimeType\":\"string\",\"schema\":\"string\",\"encoding\":\"string\"},\"id\":\"Result\",\"transmissionMode\":\"value\"}]}"
+  job=$(grep "Location: " /tmp/header  | cut -d' ' -f2 | tr -d '\r')
+  echo "run jobId: ${job}"
 
   echo "get Status:"
   curl -s -L "http://localhost:7777/${job}" -H "accept: application/json"
