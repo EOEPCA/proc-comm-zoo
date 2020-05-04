@@ -31,7 +31,7 @@ RUN cd /opt/zoo-project/zoo-project/zoo-kernel/ && ls -ltr && make && make insta
 
 ##install zoo
 RUN yum install -y vim httpd \
-	&& mkdir -p /var/www/zoo-bin/ /var/www/data/ /etc/zoo-project/ /var/www/html/res/statusInfos \
+	&& mkdir -p /opt/watchjob /var/www/zoo-bin/ /var/www/data/ /etc/zoo-project/ /var/www/html/res/statusInfos \
 	&& mkdir -p /zooservices &&  chmod 777 /zooservices \
 	&& mkdir -p /var/www/fcgi/ /var/www/html/zoo  /var/www/html/wps3 /var/www/t2dep /var/www/html/watchjob \
 	&& chown -R 48:48 /var/www/zoo-bin/ /var/www/zoo-bin/ /var/www/data/ /var/www/html/res  \
@@ -43,15 +43,15 @@ COPY assets/zoo/httpd/htaccess_wps3 /var/www/html/wps3/.htaccess
 COPY assets/zoo/httpd/htaccess_watchjob /var/www/html/watchjob/.htaccess
 COPY assets/zoo/httpd/htaccess /var/www/html/zoo/.htaccess
 COPY assets/zoo/httpd/zoo.conf	/etc/httpd/conf.d/zoo.conf
-#COPY build/demo/updateStatus.xsl /var/www/data/updateStatus.xsl
 COPY assets/main.cfg /etc/zoo-project/main.cfg
 COPY assets/oas.cfg /etc/zoo-project/oas.cfg
-
 COPY assets/main.cfg /opt/t2service/main.cfg
 COPY assets/oas.cfg /opt/t2service/oas.cfg
+COPY src/* /opt/watchjob/
 
 RUN cd /opt/zoo-project/zoo-project/zoo-services/utils/status && make && cd /opt/zoo-project/zoo-project/zoo-services/utils/status/cgi-env && \
-    cp longProcess.zcfg wps_status.zo GetStatus.zcfg /opt/t2service/ && cp /opt/zoo-project/zoo-project/zoo-services/utils/status/cgi-env/updateStatus.xsl   /var/www/data/updateStatus.xsl
+    cp longProcess.zcfg wps_status.zo GetStatus.zcfg /opt/t2service/ && cp /opt/zoo-project/zoo-project/zoo-services/utils/status/cgi-env/updateStatus.xsl   /var/www/data/updateStatus.xsl && \
+    cd /opt/watchjob/ && make && make install
 
 COPY scripts/entrypoint.sh /opt/t2scripts/entrypoint.sh
 
