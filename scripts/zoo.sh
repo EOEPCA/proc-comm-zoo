@@ -6,7 +6,6 @@ then
 	exit 1
 fi
 
-
 echo ${FOLDER}
 
 rm -fvR ${FOLDER}
@@ -22,7 +21,9 @@ then
 fi 
 
 yum update -y
-yum install -y zlib-devel libxml2 libxml2-devel bison openssl  python-devel subversion libxslt-devel libcurl-devel  gdal-devel proj-devel libuuid-devel openssl-devel fcgi-devel wget unzip autoconf flex
+yum install -y zlib-devel libxml2 libxml2-devel bison openssl  python-devel subversion libxslt-devel libcurl-devel gdal gdal-devel proj-devel libuuid-devel openssl-devel fcgi-devel wget unzip autoconf flex
+yum install -y json-c json-c-devel git
+
 if [ $? -ne 0 ]
 then
 	echo "yum install dependencies failed"
@@ -47,46 +48,42 @@ fi
 echo "****************"
 
 echo "***************"
-echo "download and install wps-zoo"
-wget "http://zoo-project.org/dl/zoo-project-1.7.0.zip"
+echo "install wps-zoo"
+
+git clone https://github.com/OSGeo/zoo-project.git ZOO-Project
 if [ $? -ne 0 ]
 then
 	echo "wget zoo failed"
 	exit 1
-fi 
-unzip zoo-project-1.7.0.zip
-if [ $? -ne 0 ]
-then
-	echo "unzip zoo failed"
-	exit 1
-fi 
+fi
 
-cd  ${FOLDER}/zoo-project-1.7.0/thirds/cgic206
+cd  ${FOLDER}/ZOO-Project/thirds/cgic206
 make libcgic.a
 if [ $? -ne 0 ]
 then
 	echo "make libcgic.a failed"
 	exit 1
-fi 
+fi
 
 make install
 if [ $? -ne 0 ]
 then
 	echo "make install libcgic.a  failed"
 	exit 1
-fi 
+fi
 
 
-cd ${FOLDER}/zoo-project-1.7.0/zoo-project/zoo-kernel/
+cd ${FOLDER}/ZOO-Project/zoo-project/zoo-kernel/
 
-autoconf  
+autoconf
 if [ $? -ne 0 ]
 then
 	echo "autoconf failed"
 	exit 1
-fi 
+fi
 
-./configure  --with-fastcgi=/opt/app-root/src/libfcgi-2.4.0.orig/OUT/lib --with-xml2config=/usr/bin/xml2-config  --with-cgi-dir=/var/www/cgi-bin --with-etc-dir=yes --sysconfdir=/etc/zoo-project
+#./configure  --with-json=/usr/ --with-fastcgi=${FOLDER}/libfcgi-2.4.0.orig/OUT/lib --with-xml2config=/usr/bin/xml2-config  --with-cgi-dir=/var/www/cgi-bin --with-etc-dir=yes --sysconfdir=/etc/zoo-project
+./configure  --with-json=/usr/ --with-fastcgi=${FOLDER}/libfcgi-2.4.0.orig/OUT/lib --with-xml2config=/usr/bin/xml2-config  --with-cgi-dir=/var/www/cgi-bin --with-etc-dir=yes --sysconfdir=/zooservices
 if [ $? -ne 0 ]
 then
 	echo "configure failed"
@@ -98,16 +95,16 @@ if [ $? -ne 0 ]
 then
 	echo "make zoo failed"
 	exit 1
-fi 
+fi
 
-make install 
+make install
 if [ $? -ne 0 ]
 then
 	echo "make install zoo failed"
 	exit 1
 fi
 
-ln -s  libzoo_service.so   libzoo_service.so.1.5 
+ln -s  libzoo_service.so   libzoo_service.so.1.5
 if [ $? -ne 0 ]
 then
 	echo "ln libzoo failed"
@@ -117,8 +114,8 @@ fi
 echo "************************************************************"
 echo "Build status service and demo"
 HERE=$PWD
-cd ${FOLDER}/zoo-project-1.7.0/zoo-project/zoo-services/utils/status
-make 
+cd ${FOLDER}/ZOO-Project/zoo-project/zoo-services/utils/status
+make
 if [ $? -ne 0 ]
 then
 	echo "make status service failed"
@@ -132,7 +129,7 @@ then
 	exit 1
 fi
 
-rsync -av cgi-env/* ${FOLDER}/demo 
+rsync -av cgi-env/* ${FOLDER}/demo
 if [ $? -ne 0 ]
 then
 	echo "rsync failed"

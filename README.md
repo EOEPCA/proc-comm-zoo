@@ -128,11 +128,6 @@ curl -L  "http://localhost:7777/zoo/?service=WPS&version=1.0.0&request=GetCapabi
 
 EOEPCA provides a ready-made Docker Image in its [DockerHub][eoepca-zoo]
 
-
-
-
-
-
 ## Usage
 
 Download and run the Docker Image
@@ -151,6 +146,198 @@ eoepca.
 
 ```sh
 docker run -d --rm --name zoo  -p 7777:80 eoepca/proc-comm-zoo:latest
+```
+
+The Docker container also supports for OGC API - Processes:
+
+```sh
+curl -s -L "http://localhost:7777/wps3/processes" -H "accept: application/json"
+```
+
+```json
+{
+  "processes": [
+    {
+      "id": "longProcess",
+      "title": "Demo long process. ",
+      "abstract": "This service doesn't do anything except taking its time, it demonstrates how to use the updateStatus function from your ZOO Service. ",
+      "version": "1.0.0",
+      "jobControlOptions": [
+        "sync-execute",
+        "async-execute",
+        "dismiss"
+      ],
+      "outputTransmission": [
+        "value",
+        "reference"
+      ],
+      "links": [
+        {
+          "rel": "canonical",
+          "type": "application/json",
+          "title": "Process Description",
+          "href": "/watchjob/processes/longProcess/"
+        }
+      ]
+    },
+    {
+      "id": "GetStatus",
+      "title": "Produce an updated ExecuteResponse document. ",
+      "abstract": "Create an ExecuteResponse document from a sid (Service ID), it will use the niternal ZOO Kernel mechanisms to access the current status from a running Service and update the percentCompleted from the original backup file used by the ZOO Kernel when running a Service in background. ",
+      "version": "1.0.0",
+      "jobControlOptions": [
+        "sync-execute",
+        "async-execute",
+        "dismiss"
+      ],
+      "outputTransmission": [
+        "value",
+        "reference"
+      ],
+      "links": [
+        {
+          "rel": "canonical",
+          "type": "application/json",
+          "title": "Process Description",
+          "href": "/watchjob/processes/GetStatus/"
+        }
+      ]
+    }
+  ]
+}
+```
+
+```sh
+curl -s -L "http://localhost:7777/wps3/processes/longProcess" -H "accept: application/json"
+```
+
+```json
+{
+  "process": {
+    "id": "longProcess",
+    "title": "Demo long process. ",
+    "abstract": "This service doesn't do anything except taking its time, it demonstrates how to use the updateStatus function from your ZOO Service. ",
+    "version": "1.0.0",
+    "jobControlOptions": [
+      "sync-execute",
+      "async-execute",
+      "dismiss"
+    ],
+    "outputTransmission": [
+      "value",
+      "reference"
+    ],
+    "links": [
+      {
+        "rel": "canonical",
+        "type": "application/json",
+        "title": "Execute End Point",
+        "href": "/watchjob/processes/longProcess/jobs/"
+      }
+    ],
+    "inputs": [
+      {
+        "id": "sid",
+        "title": "Service ID",
+        "abstract": "A ZOO Service ID (unused).",
+        "minOccurs": "0",
+        "maxOccurs": "1",
+        "input": {
+          "literalDataDomains": [
+            {
+              "dataType": {
+                "name": "integer"
+              },
+              "valueDefinition": {
+                "anyValue": true
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "id": "Result",
+        "title": "ExecuteResponse document",
+        "abstract": "The resulting ExecuteResponse document.",
+        "output": {
+          "literalDataDomains": [
+            {
+              "dataType": {
+                "name": "string"
+              },
+              "valueDefinition": {
+                "anyValue": true
+              }
+            }
+          ]
+        },
+        "metadata": [
+          {
+            "title": "Demo XSL use case"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+```sh
+curl -v -L -X POST "http://localhost:7777/wps3/processes/longProcess/jobs" -H  "accept: application/json" -H  "Prefer: respond-async" -H  "Content-Type: application/json" -d "{\"inputs\":[{\"id\":\"string\"}],\"outputs\":[{\"format\":{\"mimeType\":\"string\",\"schema\":\"string\",\"encoding\":\"string\"},\"id\":\"Result\",\"transmissionMode\":\"value\"}],\"mode\":\"sync\",\"response\":\"raw\",\"subscriber\":{\"successUri\":\"string\",\"inProgressUri\":\"string\",\"failedUri\":\"string\"}}"
+```
+
+result
+
+```txt
+* About to connect() to localhost port 7777 (#0)
+*   Trying 127.0.0.1...
+* Connected to localhost (127.0.0.1) port 7777 (#0)
+> POST /wps3/processes/longProcess/jobs HTTP/1.1
+> User-Agent: curl/7.29.0
+> Host: localhost:7777
+> accept: application/json
+> Prefer: respond-async
+> Content-Type: application/json
+> Content-Length: 266
+>
+* upload completely sent off: 266 out of 266 bytes
+< HTTP/1.1 201 Created
+< Date: Tue, 05 May 2020 08:32:28 GMT
+< Server: Apache/2.4.6 (CentOS)
+< X-Powered-By: ZOO@ZOO-Project
+< Location: /watchjob/processes/longProcess/jobs/f4574dc8-8eaa-11ea-9279-0242ac110002
+< Transfer-Encoding: chunked
+< Content-Type: application/json;charset=UTF-8
+<
+* Connection #0 to host localhost left intact
+```
+
+```sh
+curl -s -L "http://localhost:7777/wps3/processes/longProcess/jobs" -H "accept: application/json"
+```
+
+```json
+[
+  {
+    "id": "f4574dc8-8eaa-11ea-9279-0242ac110002",
+    "infos": {
+      "status": "successful",
+      "message": "ZOO-Kernel successfully run your service!",
+      "links": [
+        {
+          "Title": "Status location",
+          "href": "/watchjob/processes/longProcess/jobs/f4574dc8-8eaa-11ea-9279-0242ac110002"
+        },
+        {
+          "Title": "Result location",
+          "href": "/watchjob/processes/longProcess/jobs/f4574dc8-8eaa-11ea-9279-0242ac110002/result"
+        }
+      ]
+    }
+  }
+]
 ```
 
 ## Contributing
