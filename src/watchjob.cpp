@@ -198,34 +198,52 @@ int main(int argc, char **argv, char **envp) {
 
   INIReader info(std::string(configFile.get()));
   std::string theStatus = info.Get("lenv", "status", "none");
+  std::string theMessage = info.Get("lenv", "status", "none");
 
   std::stringstream statusBuffer;
   std::stringstream finalBuffer;
+
+
+  const char *CONTEXT_PREFIX = std::getenv("CONTEXT_PREFIX");
+  const char *HTTP_HOST = std::getenv("HTTP_HOST");
+  const char *REQUEST_SCHEME = std::getenv("REQUEST_SCHEME");
+  auto uri = std::make_unique<char[]>(M1024 * 2);
+  std::memset(uri.get(), '\0', M1024 * 2);
+  sprintf(uri.get(), "%s://%s%s%s", REQUEST_SCHEME, HTTP_HOST,
+          CONTEXT_PREFIX, cgiEnv.getPathInfo().c_str());
+
+
 
   if (isResult) {
     if (loadFile(finalFile.get(), finalBuffer) == 0) {
       return sendFinalResult(finalBuffer);
     } else {
       std::cout << HTTPSTATUSM(404, "Can't load the result file") << std::endl;
+      return 0;
     }
 
   } else {
+
     if (loadFile(statusFile.get(), statusBuffer) == 0) {
       auto statusV = split(statusBuffer.str(), '|');
-
-      const char *CONTEXT_PREFIX = std::getenv("CONTEXT_PREFIX");
-      const char *HTTP_HOST = std::getenv("HTTP_HOST");
-      const char *REQUEST_SCHEME = std::getenv("REQUEST_SCHEME");
-
-      auto uri = std::make_unique<char[]>(M1024 * 2);
-      std::memset(uri.get(), '\0', M1024 * 2);
-      sprintf(uri.get(), "%s://%s%s%s", REQUEST_SCHEME, HTTP_HOST,
-              CONTEXT_PREFIX, cgiEnv.getPathInfo().c_str());
       sendStatus(theStatus.c_str(), uri.get(), processId, statusV);
 
     } else {
-      std::cout << HTTPSTATUSM(404, "Can't load the status File file")
-                << std::endl;
+      if (theStatus=="none"){
+        std::cout << HTTPSTATUSM(404, "Can't load the status File file")
+                  << std::endl;
+        return 0;
+      }
+
+      if (theStatus=="running"){
+        std::vector<std::string> vMessage{"0",theMessage};
+        sendStatus(theStatus.c_str(), uri.get(), processId, vMessage);
+        return 0;
+      }
+
+      std::vector<std::string> vMessage{"100",theMessage};
+      sendStatus(theStatus.c_str(), uri.get(), processId, vMessage);
+
     }
   }
 
