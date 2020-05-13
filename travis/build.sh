@@ -6,6 +6,6 @@ source travis/libs/variables.sh
 
 if [ "${TRAVIS}" != "true" ]
 then
-	export BUILD_ONLY='true'
+#	export BUILD_ONLY='true'
 	scripts/build.sh
 fi
