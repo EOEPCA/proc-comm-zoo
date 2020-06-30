@@ -21,6 +21,7 @@ ENV PATH "$PATH:/usr/local/bin"
 
 COPY assets/zoo-project.tar.gz /opt/zoo-project.tar.gz
 RUN cd /opt/ && tar -zxvf zoo-project.tar.gz && rm -f zoo-project.tar.gz
+COPY  assets/patch/zoo/zoo_service_loader.c /opt/zoo-project/zoo-project/zoo-kernel/zoo_service_loader.c
 
 RUN cd /opt/zoo-project/thirds/cgic206 && make libcgic.a && make install
 
