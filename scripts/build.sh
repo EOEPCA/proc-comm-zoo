@@ -10,11 +10,18 @@ then
 	buildTag="1.0"
 fi
 
-	docker build --rm -t ${LOCAL_SERVICE_NAME}:${buildTag} .
-	if [ $? -ne 0 ]
-	then
-		echo "build Docker image  failed"
-		exit 3
-	fi
+
+if [ -z "${addUserFeature}" ]
+then
+	WITH_USER='--build-arg addUserFeature=TRUE '
+fi
+
+echo "docker build --rm -t ${LOCAL_SERVICE_NAME}:${buildTag} ${WITH_USER} ."
+docker build --rm -t ${LOCAL_SERVICE_NAME}:${buildTag} ${WITH_USER} .
+if [ $? -ne 0 ]
+then
+	echo "build Docker image  failed"
+	exit 3
+fi
 
 

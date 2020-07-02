@@ -244,7 +244,7 @@ int dumpBackFinalFile(maps* m,char* fbkp,char* fbkp1)
   return 1;
 }
 
-//rdr
+//rdr  
 int 
 getUserWorkspacePath(maps* m,char* oldPatr,char* newPath,int maxSize){
   map *rdrMAP = getMapFromMaps (m, "eoepcaUser", "user");
@@ -259,36 +259,163 @@ getUserWorkspacePath(maps* m,char* oldPatr,char* newPath,int maxSize){
 }
 
 //rdr
+size_t calcDecodeLength(const char* b64input) { //Calculates the length of a decoded string
+	size_t len = strlen(b64input),
+		padding = 0;
+	if (b64input[len-1] == '=' && b64input[len-2] == '=') //last two chars are =
+		padding = 2;
+	else if (b64input[len-1] == '=') //last char is =
+		padding = 1;
+
+	return (len*3)/4 - padding;
+}
+//rdr
+int Base64Decode(char* b64message, unsigned char** buffer, size_t* length) { //Decodes a base64 encoded string
+	BIO *bio, *b64;
+
+	int decodeLen = calcDecodeLength(b64message);
+	*buffer = (unsigned char*)malloc(decodeLen + 1);
+	(*buffer)[decodeLen] = '\0';
+
+	bio = BIO_new_mem_buf(b64message, -1);
+	b64 = BIO_new(BIO_f_base64());
+	bio = BIO_push(b64, bio);
+
+	BIO_set_flags(bio, BIO_FLAGS_BASE64_NO_NL); //Do not use newlines to flush buffer
+	*length = BIO_read(bio, *buffer, strlen(b64message));
+	// assert(*length == decodeLen); //length should equal decodeLen, else something went horribly wrong
+	BIO_free_all(bio);
+
+	return (0); //success
+}
+//rdr
 int
 addUserToMap(maps* conf){
- int ei = 1;
+  int ei = 1;
+  int canContinue=false;
   char **orig = environ;
   char *s=*orig;
+  char* username=NULL;
   
   if(orig!=NULL)
     for (; s; ei++ ) {
-      if(strstr(s,"=")!=NULL && strlen(strstr(s,"="))>1){      
-        fprintf(stderr,"--> %s \n", s );
+      if(strstr(s,"=")!=NULL && strlen(strstr(s,"="))>1){
+        
+      	// int len=strlen(s);
+      	// char* tmpName=zStrdup(s);
+      	// char* tmpValue=strstr(s,"=")+1;
+      	// char* tmpName1=(char*)malloc((1+(len-(strlen(tmpValue)+1)))*sizeof(char));
+      	// snprintf(tmpName1,(len-strlen(tmpValue)),"%s",tmpName);
 
-	int len=strlen(s);
-	char* tmpName=zStrdup(s);
-	char* tmpValue=strstr(s,"=")+1;
-	char* tmpName1=(char*)malloc((1+(len-(strlen(tmpValue)+1)))*sizeof(char));
-	snprintf(tmpName1,(len-strlen(tmpValue)),"%s",tmpName);
-  if(strstr(s,"HTTP_EOEPCA_USER")!=NULL && strlen(strstr(s,"="))>1 ){
-      maps *_tmpMaps = createMaps("eoepcaUser");
-  if(_tmpMaps->content == NULL)
-	  _tmpMaps->content = createMap ("user",tmpValue);
-	else
-	  addToMap (_tmpMaps->content,"user",tmpValue);
+        if(strstr(s,"HTTP_AUTHORIZATION")!=NULL && strlen(strstr(s,"="))>1  && strstr(s,"REDIRECT_HTTP_AUTHORIZATION")==NULL){
+          // fprintf(stderr,"--> %s=%s \n", tmpName1, tmpValue );
+          char* baseU=strchr(s,'=');
+          if (baseU){
+            char* baseS=strchr(++baseU,' ');
+            if (baseS){
+              *baseS='\0';
+              fprintf(stderr,"**** %s\n",baseU);
+              if (strcmp(baseU,"Bearer")==0){
+                canContinue=true;
+              }
+              *baseS=' ';
+              if (canContinue){
+                while (*(++baseS)==' ');
+                fprintf(stderr,">%s<\n",baseS);                
 
-  if(conf){
-    addMapsToMaps (&conf, _tmpMaps);
-  }
- fprintf(stderr,"--> %s=%s \n", tmpName1, tmpValue );
-  }
-	free(tmpName1);
-	free(tmpName);
+                char* HEADER=baseS;
+                char* PAYLOAD=NULL;
+                char* VERIFY_SIGNATURE=NULL;
+
+                char* tmpP=strchr(HEADER,'.');
+                if (tmpP){
+                  *tmpP='\0';
+                  PAYLOAD=tmpP+1;                 
+                  tmpP=strchr(PAYLOAD ,'.');
+                  if (tmpP){
+                    *tmpP='\0';
+                    VERIFY_SIGNATURE=tmpP+1;
+                    int bufferLen=0;
+
+                    size_t nPAYLOAD=(strlen(PAYLOAD)+2)*sizeof (char);
+                    char* cPAYLOAD=(char*)malloc(nPAYLOAD);
+                    memset(cPAYLOAD,'\0',nPAYLOAD);
+                    memcpy(cPAYLOAD,PAYLOAD,(strlen(PAYLOAD))*sizeof (char));
+                    *(cPAYLOAD+strlen(PAYLOAD)) = '=';
+
+                    unsigned char* buffer=NULL;
+                    size_t theLen=0;
+                    Base64Decode(cPAYLOAD,&buffer,&theLen);
+
+                    fprintf(stderr,"PAYLOAD %s\n",PAYLOAD);
+                    fprintf(stderr,"PAYLOAD %s\n",cPAYLOAD);
+                    fprintf(stderr,"buffer %s\n",(char*)buffer);
+
+                    struct json_object *jobj;
+                    jobj = json_tokener_parse((char*)buffer/*(char *)buffer*/);
+
+                    if(jobj){
+                      fprintf(stderr,"jobj from str:\n---\n%s\n---\n", json_object_to_json_string_ext(jobj, JSON_C_TO_STRING_SPACED | JSON_C_TO_STRING_PRETTY));                          
+                      json_object* pct_claims=NULL;
+                      if(json_object_object_get_ex(jobj,"pct_claims",&pct_claims)!=FALSE){
+
+                        json_object* user_names=NULL;
+                        if(json_object_object_get_ex(pct_claims,"user_name",&user_names)!=FALSE){                     
+                          int arraylen;
+                          json_object  *medi_array=NULL,*medi_array_obj=NULL;
+                          arraylen = json_object_array_length(user_names);
+                          if (arraylen>0){
+                            medi_array_obj=json_object_array_get_idx(user_names, 0);
+
+                            int uLen=json_object_get_string_len(medi_array_obj) * sizeof(char);
+                            if (uLen>0){
+                              username=(char*)malloc(uLen+1);
+                              memset(username,'\0',uLen+1);
+                              memcpy(username,json_object_get_string(medi_array_obj),uLen);
+                              fprintf(stderr,">>>>%s<<<<<=====>>>>>\n",username);
+
+                              maps *_tmpMaps = createMaps("eoepcaUser");
+                              if(_tmpMaps->content == NULL)
+                        	      _tmpMaps->content = createMap ("user",username);
+                        	    else
+                        	      addToMap (_tmpMaps->content,"user",username);
+                              if(conf){
+                                addMapsToMaps (&conf, _tmpMaps);
+                              }
+                              free(username);
+                            }
+                          }
+                        }
+                      }
+                    }else{
+                      fprintf(stderr,"can't convert the json string >%s< \n",(char*)buffer);                          
+                    }
+
+                    if(jobj){
+                      json_object_put(jobj);
+                    }
+                    free(cPAYLOAD);
+                    free(buffer);
+                  }
+                }
+              }
+            }
+          }
+
+          // if (canContinue){
+          //   maps *_tmpMaps = createMaps("eoepcaUser");
+          //   if(_tmpMaps->content == NULL)
+      	  //     _tmpMaps->content = createMap ("user",tmpValue);
+      	  //   else
+      	  //     addToMap (_tmpMaps->content,"user",tmpValue);
+          //   if(conf){
+          //     addMapsToMaps (&conf, _tmpMaps);
+          //   }
+          // }
+          
+        }
+      	// free(tmpName1);
+      	// free(tmpName);
       }
       s = *(orig+ei);
     } 
@@ -1763,6 +1890,9 @@ runRequest (map ** inputs)
 
   //rdr
   addUserToMap(m);
+  maps* userMap=getMaps(m,"eoepcaUser");
+
+
   // map *theServicePath = getMapFromMaps (m, "main", "servicePath");
   // if (theServicePath && theServicePath->value ){
   //   int theLen=(strlen(theServicePath->value)+1024+1)*sizeof(char);
