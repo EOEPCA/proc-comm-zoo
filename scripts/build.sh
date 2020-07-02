@@ -11,7 +11,7 @@ then
 fi
 
 
-if [ -z "${addUserFeature}" ]
+if [ -n "${addUserFeature}" ]
 then
 	WITH_USER='--build-arg addUserFeature=TRUE '
 fi
