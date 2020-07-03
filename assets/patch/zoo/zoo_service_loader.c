@@ -2237,6 +2237,15 @@ runRequest (map ** inputs)
       //rdr.......
       char newPath[1024];
       getUserWorkspacePath(m,ntmp,newPath,1024);
+      
+      if (
+        strcmp(cIdentifier,"eoepcaadesdeployprocess")==0 || 
+        strcmp(cIdentifier,"eoepcaadesundeployprocess")==0
+      ){
+         memset(newPath,'\0',1024);
+         strcpy(newPath,ntmp);
+      }
+      
       if (strcmp(ntmp, newPath )==0) {
         snprintf (tmps1, 1024, "%s/%s.zcfg", ntmp, cIdentifier);
       }else{
